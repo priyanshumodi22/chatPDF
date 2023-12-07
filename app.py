@@ -13,7 +13,10 @@ import base64
 from streamlit_javascript import st_javascript
 
 OPENAI_API_KEY = config('OPENAI_API_KEY')
-st.header("Chat with multiple PDFs :books:")
+st.set_page_config(page_title="Chat with multiple PDFs",
+                       page_icon="📚", layout="wide")
+
+
 def get_pdf_text(pdf_docs):
     text = ""
     for pdf in pdf_docs:
@@ -62,7 +65,7 @@ def handle_userinput(user_question):
                 st.write(bot_template.replace(
                     "{{MSG}}", message.content), unsafe_allow_html=True)
 
-col1,col2 = st.columns(spec=[1,1] , gap= "medium")
+col1,col2 = st.columns(spec=[2,1.4] , gap= "small")
 
 def displayPDF(file,ui_width):
     bytes_data = file.read()
@@ -72,8 +75,6 @@ def displayPDF(file,ui_width):
 
 def main():
     load_dotenv()
-    # st.set_page_config(page_title="Chat with multiple PDFs",
-    #                    page_icon=":books:")
     st.write(css, unsafe_allow_html=True)
 
     # if "conversation" not in st.session_state:
@@ -117,7 +118,9 @@ def main():
         st.subheader("PDFs")
         ui_width =  st_javascript("window.innerWidth")
         for pdf in pdf_docs:
-            displayPDF(pdf,ui_width - 100)
+            displayPDF(pdf,ui_width - 50)
+
+                
 
     with col2:
         if "conversation" not in st.session_state:
