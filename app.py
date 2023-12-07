@@ -13,9 +13,11 @@ import base64
 from streamlit_javascript import st_javascript
 
 OPENAI_API_KEY = config('OPENAI_API_KEY')
+
 st.set_page_config(page_title="Chat with multiple PDFs",
                        page_icon="📚", layout="wide")
 
+col1,col2 = st.columns(spec=[2,1.4] , gap= "small")
 
 def get_pdf_text(pdf_docs):
     text = ""
@@ -65,7 +67,6 @@ def handle_userinput(user_question):
                 st.write(bot_template.replace(
                     "{{MSG}}", message.content), unsafe_allow_html=True)
 
-col1,col2 = st.columns(spec=[2,1.4] , gap= "small")
 
 def displayPDF(file,ui_width):
     bytes_data = file.read()
