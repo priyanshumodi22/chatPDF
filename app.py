@@ -11,13 +11,15 @@ from langchain.chains import ConversationalRetrievalChain
 from htmlTemplates import css, bot_template, user_template
 import base64
 from streamlit_javascript import st_javascript
+import pickle
+import os
 
 OPENAI_API_KEY = config('OPENAI_API_KEY')
 
 st.set_page_config(page_title="Chat with multiple PDFs",
                        page_icon="📚", layout="wide")
 
-col1,col2 = st.columns(spec=[2,1.4] , gap= "small")
+col1,col2 = st.columns(spec=[2,2] , gap= "small")
 
 def get_pdf_text(pdf_docs):
     text = ""
@@ -71,7 +73,7 @@ def handle_userinput(user_question):
 def displayPDF(file,ui_width):
     bytes_data = file.read()
     base64_pdf = base64.b64encode(bytes_data).decode('utf-8')
-    pdf_display = f'<iframe src="data:application/pdf;base64,{base64_pdf}" width={str(ui_width)} height={str(ui_width*4/3)} type="application/pdf"></iframe>'
+    pdf_display = f'<iframe src="data:application/pdf;base64,{base64_pdf}" width="100%" height={str(ui_width*4/3)} type="application/pdf"></iframe>'
     st.markdown(pdf_display, unsafe_allow_html=True)
 
 def main():
@@ -95,6 +97,7 @@ def main():
         pdf_docs = st.file_uploader(
             "Upload your PDFs here and click on 'Process'",accept_multiple_files=True, type=["pdf"])
         
+        print(pdf_docs)
         if st.button("Process"):
             # Display a progress bar for PDF upload
             
@@ -113,16 +116,20 @@ def main():
                 st.session_state.conversation = get_conversation_chain(
                     vectorstore)
                 
+                st.session_state["processed_pdfs"] = pdf_docs
+                
                 st.success("Processing completed! You can now chat with PDF.", icon="✅")
 
     with col1:
         st.subheader("PDFs")
         ui_width =  st_javascript("window.innerWidth")
+
+        if "processed_pdfs" not in st.session_state:
+            st.session_state.processed_pdfs = None
+
         for pdf in pdf_docs:
             displayPDF(pdf,ui_width - 50)
-
                 
-
     with col2:
         if "conversation" not in st.session_state:
             st.session_state.conversation = None
