@@ -9,9 +9,11 @@ from langchain.chat_models import ChatOpenAI
 from langchain.memory import ConversationBufferMemory
 from langchain.chains import ConversationalRetrievalChain
 from htmlTemplates import css, bot_template, user_template
+import base64
+from streamlit_javascript import st_javascript
 
 OPENAI_API_KEY = config('OPENAI_API_KEY')
-
+st.header("Chat with multiple PDFs :books:")
 def get_pdf_text(pdf_docs):
     text = ""
     for pdf in pdf_docs:
@@ -60,27 +62,37 @@ def handle_userinput(user_question):
                 st.write(bot_template.replace(
                     "{{MSG}}", message.content), unsafe_allow_html=True)
 
+col1,col2 = st.columns(spec=[1,1] , gap= "medium")
+
+def displayPDF(file,ui_width):
+    bytes_data = file.read()
+    base64_pdf = base64.b64encode(bytes_data).decode('utf-8')
+    pdf_display = f'<iframe src="data:application/pdf;base64,{base64_pdf}" width={str(ui_width)} height={str(ui_width*4/3)} type="application/pdf"></iframe>'
+    st.markdown(pdf_display, unsafe_allow_html=True)
+
 def main():
     load_dotenv()
-    st.set_page_config(page_title="Chat with multiple PDFs",
-                       page_icon=":books:")
+    # st.set_page_config(page_title="Chat with multiple PDFs",
+    #                    page_icon=":books:")
     st.write(css, unsafe_allow_html=True)
 
-    if "conversation" not in st.session_state:
-        st.session_state.conversation = None
-    if "chat_history" not in st.session_state:
-        st.session_state.chat_history = None
+    # if "conversation" not in st.session_state:
+    #     st.session_state.conversation = None
+    # if "chat_history" not in st.session_state:
+    #     st.session_state.chat_history = None
 
-    st.header("Chat with multiple PDFs :books:")
-    user_question = st.text_input("Ask a question about your documents:")
-    if user_question:
-        # Handle user input and display acknowledgment spinner
-        handle_userinput(user_question)
+    # st.header("Chat with multiple PDFs :books:")
+
+    # user_question = st.text_input("Ask a question about your documents:")
+    # if user_question:
+    #     # Handle user input and display acknowledgment spinner
+    #     handle_userinput(user_question)
 
     with st.sidebar:
         st.subheader("Your documents")
         pdf_docs = st.file_uploader(
-            "Upload your PDFs here and click on 'Process'", accept_multiple_files=True)
+            "Upload your PDFs here and click on 'Process'",accept_multiple_files=True, type=["pdf"])
+        
         if st.button("Process"):
             # Display a progress bar for PDF upload
             
@@ -101,7 +113,25 @@ def main():
                 
                 st.success("Processing completed! You can now chat with PDF.", icon="✅")
 
-    
+    with col1:
+        st.subheader("PDFs")
+        ui_width =  st_javascript("window.innerWidth")
+        for pdf in pdf_docs:
+            displayPDF(pdf,ui_width - 100)
+
+    with col2:
+        if "conversation" not in st.session_state:
+            st.session_state.conversation = None
+        if "chat_history" not in st.session_state:
+            st.session_state.chat_history = None
+
+        st.subheader("Ask question: ")
+
+        user_question = st.text_input("Ask a question about your documents:")
+        if user_question:
+            # Handle user input and display acknowledgment spinner
+            handle_userinput(user_question)
+
 
 if __name__ == '__main__':
     main()
