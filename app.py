@@ -19,6 +19,8 @@ OPENAI_API_KEY = config('OPENAI_API_KEY')
 st.set_page_config(page_title="Chat with multiple PDFs",
                        page_icon="📚", layout="wide")
 
+ui_width =  st_javascript("window.innerWidth")
+
 col1,col2 = st.columns(spec=[2,2] , gap= "small")
 
 def get_pdf_text(pdf_docs):
@@ -79,6 +81,9 @@ def displayPDF(file,ui_width):
     pdf_display = f'<iframe src="data:application/pdf;base64,{base64_pdf}" width="100%" height={str(ui_width*4/3)} type="application/pdf"></iframe>'
     st.markdown(pdf_display, unsafe_allow_html=True)
 
+with col1:
+        st.subheader("PDFs")
+
 def main():
     load_dotenv()
     st.write(css, unsafe_allow_html=True)
@@ -88,39 +93,32 @@ def main():
         pdf_docs = st.file_uploader(
             "Upload your PDFs here and click on 'Process'",accept_multiple_files=True, type=["pdf"])
         
-        print(pdf_docs)
-        if st.button("Process"):
-            # Display a progress bar for PDF upload
+        with col1:
+            for pdf in pdf_docs:
+                with st.expander(pdf.name):
+                    displayPDF(pdf,ui_width - 50)
+        
+        # Display a progress bar for PDF upload
+        if pdf_docs:
+            # get pdf text
             
-            with st.spinner("Processing"):
-                # get pdf text
-                
-                raw_text = get_pdf_text(pdf_docs)
+            raw_text = get_pdf_text(pdf_docs)
 
-                # get the text chunks
-                text_chunks = get_text_chunks(raw_text)
+            # get the text chunks
+            text_chunks = get_text_chunks(raw_text)
 
-                # create vector store
-                vectorstore = get_vectorstore(text_chunks)
+            # create vector store
+            vectorstore = get_vectorstore(text_chunks)
 
-                # create conversation chain
-                st.session_state.conversation = get_conversation_chain(
-                    vectorstore)
-                
-                st.session_state["processed_pdfs"] = pdf_docs
-                
-                st.success("Processing completed! You can now chat with PDF.", icon="✅")
+            # create conversation chain
+            st.session_state.conversation = get_conversation_chain(
+                vectorstore)
+            
+            st.session_state["processed_pdfs"] = pdf_docs
+            
+            st.success("Processing completed! You can now chat with PDF.", icon="✅")
 
-    with col1:
-        st.subheader("PDFs")
-        ui_width =  st_javascript("window.innerWidth")
 
-        if "processed_pdfs" not in st.session_state:
-            st.session_state.processed_pdfs = None
-
-        for pdf in pdf_docs:
-            displayPDF(pdf,ui_width - 50)
-                
     with col2:
         if "conversation" not in st.session_state:
             st.session_state.conversation = None
