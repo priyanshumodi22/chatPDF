@@ -61,7 +61,10 @@ def handle_userinput(user_question):
         response = st.session_state.conversation({'question': user_question})
         st.session_state.chat_history = response['chat_history']
 
-        for i, message in enumerate(st.session_state.chat_history):
+        # Reverse the order of messages to display recent chats on top
+        reversed_chat_history = reversed(st.session_state.chat_history)
+
+        for i, message in enumerate(reversed_chat_history):
             if i % 2 == 0:
                 st.write(user_template.replace(
                     "{{MSG}}", message.content), unsafe_allow_html=True)
@@ -79,18 +82,6 @@ def displayPDF(file,ui_width):
 def main():
     load_dotenv()
     st.write(css, unsafe_allow_html=True)
-
-    # if "conversation" not in st.session_state:
-    #     st.session_state.conversation = None
-    # if "chat_history" not in st.session_state:
-    #     st.session_state.chat_history = None
-
-    # st.header("Chat with multiple PDFs :books:")
-
-    # user_question = st.text_input("Ask a question about your documents:")
-    # if user_question:
-    #     # Handle user input and display acknowledgment spinner
-    #     handle_userinput(user_question)
 
     with st.sidebar:
         st.subheader("Your documents")
@@ -139,9 +130,11 @@ def main():
         st.subheader("Ask question: ")
 
         user_question = st.text_input("Ask a question about your documents:")
-        if user_question:
+        with st.expander("Chat history"):
+         with st.container():
+            if user_question:
             # Handle user input and display acknowledgment spinner
-            handle_userinput(user_question)
+                handle_userinput(user_question)
 
 
 if __name__ == '__main__':
