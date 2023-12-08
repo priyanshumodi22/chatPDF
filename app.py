@@ -11,7 +11,7 @@ from langchain.chains import ConversationalRetrievalChain
 from htmlTemplates import css, bot_template, user_template
 import base64
 from streamlit_javascript import st_javascript
-import pickle
+
 import os
 
 OPENAI_API_KEY = config('OPENAI_API_KEY')
