@@ -83,6 +83,7 @@ def displayPDF(file,ui_width):
 
 with col1:
         st.subheader("PDFs")
+
 def main():
     load_dotenv()
     st.write(css, unsafe_allow_html=True)
@@ -93,7 +94,8 @@ def main():
             "Upload your PDFs here and click on 'Process'",accept_multiple_files=True, type=["pdf"])
         
         with col1:
-                for pdf in pdf_docs:
+            for pdf in pdf_docs:
+                with st.expander(pdf.name):
                     displayPDF(pdf,ui_width - 50)
         
         # Display a progress bar for PDF upload
