@@ -1,4 +1,5 @@
 import streamlit as st
+import time
 from dotenv import load_dotenv
 from decouple import config
 from PyPDF2 import PdfReader
@@ -73,6 +74,8 @@ def handle_userinput(user_question):
             else:
                 st.write(bot_template.replace(
                     "{{MSG}}", message.content), unsafe_allow_html=True)
+        
+        # time.sleep(20)
 
 
 def displayPDF(file,ui_width):
