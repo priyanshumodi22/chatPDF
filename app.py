@@ -11,10 +11,15 @@ from langchain.chains import ConversationalRetrievalChain
 from htmlTemplates import css, bot_template, user_template
 import base64
 from streamlit_javascript import st_javascript
-
-import os
+# from st_files_connection import FilesConnection
+import boto3
+from io import BytesIO
+# import os
 
 OPENAI_API_KEY = config('OPENAI_API_KEY')
+
+AWS_ACCESS_KEY_ID = config('AWS_ACCESS_KEY_ID')
+AWS_SECRET_KEY = config('AWS_SECRET_KEY_ID')
 
 st.set_page_config(page_title="Chat with multiple PDFs",
                        page_icon="📚", layout="wide")
@@ -22,6 +27,15 @@ st.set_page_config(page_title="Chat with multiple PDFs",
 ui_width =  st_javascript("window.innerWidth")
 
 col1,col2 = st.columns(spec=[2,2] , gap= "small")
+
+s3 = boto3.client(
+                service_name='s3',
+                region_name='ap-south-1',
+                aws_access_key_id=AWS_ACCESS_KEY_ID,
+                aws_secret_access_key=AWS_SECRET_KEY,
+            )
+
+bucket = "majorbucket106"
 
 def get_pdf_text(pdf_docs):
     text = ""
@@ -97,12 +111,19 @@ def main():
             for pdf in pdf_docs:
                 with st.expander(pdf.name):
                     displayPDF(pdf,ui_width - 50)
+                    # s3.upload_fileobj(pdf, bucket, pdf.name)
         
+
         # Display a progress bar for PDF upload
+        # if pdf_docs:
+        #     for pdf in pdf_docs:
+        #         print("Uploaded to S3")
+        #         s3.upload_fileobj(pdf, bucket, pdf.name)
         if pdf_docs:
             # get pdf text
-            
             raw_text = get_pdf_text(pdf_docs)
+
+            #  upload to s3
 
             # get the text chunks
             text_chunks = get_text_chunks(raw_text)
@@ -114,7 +135,9 @@ def main():
             st.session_state.conversation = get_conversation_chain(
                 vectorstore)
             
-            st.session_state["processed_pdfs"] = pdf_docs
+            # st.success("PDFs uploaded successfully! Click on 'Process' to start processing.", icon="✅")
+            # st.session_state["processed_pdfs"] = pdf_docs
+            
             
             st.success("Processing completed! You can now chat with PDF.", icon="✅")
 
