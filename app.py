@@ -23,7 +23,7 @@ OPENAI_API_KEY = config('OPENAI_API_KEY')
 AWS_ACCESS_KEY_ID = config('AWS_ACCESS_KEY_ID')
 AWS_SECRET_KEY = config('AWS_SECRET_KEY_ID')
 
-st.set_page_config(page_title="Chat with multiple PDFs",
+st.set_page_config(page_title="Chat with PDFs",
                        page_icon="📚", layout="wide")
 
 ui_width =  st_javascript("window.innerWidth")
