@@ -11,24 +11,26 @@ from langchain.memory import ConversationBufferMemory
 from langchain.chains import ConversationalRetrievalChain
 from htmlTemplates import css, bot_template, user_template
 import base64
+from pathlib import Path
 from streamlit_javascript import st_javascript
 # from st_files_connection import FilesConnection
 import boto3
 from io import BytesIO
-# import os
+import os
 
 OPENAI_API_KEY = config('OPENAI_API_KEY')
 
 AWS_ACCESS_KEY_ID = config('AWS_ACCESS_KEY_ID')
 AWS_SECRET_KEY = config('AWS_SECRET_KEY_ID')
 
-st.set_page_config(page_title="Chat with multiple PDFs",
+st.set_page_config(page_title="Chat with PDFs",
                        page_icon="📚", layout="wide")
 
 ui_width =  st_javascript("window.innerWidth")
 
 col1,col2 = st.columns(spec=[2,2] , gap= "small")
 
+curr_path = os.getcwd()
 s3 = boto3.client(
                 service_name='s3',
                 region_name='ap-south-1',
@@ -93,8 +95,8 @@ def handle_userinput(user_question):
 
 
 def displayPDF(file,ui_width):
-    bytes_data = file.read()
-    base64_pdf = base64.b64encode(bytes_data).decode('utf-8')
+    d = file.read()
+    base64_pdf = base64.b64encode(d).decode('utf-8')
     pdf_display = f'<iframe src="data:application/pdf;base64,{base64_pdf}" width="100%" height={str(ui_width*4/3)} type="application/pdf"></iframe>'
     st.markdown(pdf_display, unsafe_allow_html=True)
 
@@ -112,9 +114,10 @@ def main():
         
         with col1:
             for pdf in pdf_docs:
+                s3.upload_fileobj(pdf, bucket, pdf.name)
+                # pdf.seek(0)
                 with st.expander(pdf.name):
                     displayPDF(pdf,ui_width - 50)
-                    # s3.upload_fileobj(pdf, bucket, pdf.name)
         
 
         # Display a progress bar for PDF upload
