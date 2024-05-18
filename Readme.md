@@ -23,10 +23,10 @@ streamlit run app.py
 
 ## Demo
 ### System Design
- ![SystemDesign](https://media.discordapp.net/attachments/796397516643368961/1183076783814365226/PDF-LangChain.jpg?ex=6587051d&is=6574901d&hm=d31ac0940f9010c65e93dba7a0942d647ddf3b6706b66452e919b341a12ff950&=&format=webp&width=1218&height=676) 
+ ![SystemDesign](https://media.discordapp.net/attachments/1142888467920064672/1241301808006172683/image.png?ex=6649b3e5&is=66486265&hm=f586c5259bc20988e10b19484b742023d50e0f660d72c4ad0827c8abe8860dd4&=&format=webp&quality=lossless&width=1375&height=676) 
 
 ### UI
- ![UI](https://media.discordapp.net/attachments/796397516643368961/1183076737152729148/image.png?ex=65870512&is=65749012&hm=f53382d22865dbcbf5d7142772f5daec146096b8ac2d293e4ffaee848525a658&=&format=webp&quality=lossless&width=1375&height=676) 
+ ![UI](https://media.discordapp.net/attachments/1142888467920064672/1241302055973421107/image.png?ex=6649b420&is=664862a0&hm=b62393063ee9bd7a46335c309ef5b6bcf5d93bdfb0abf27d2602573bf1bc5eb1&=&format=webp&quality=lossless&width=1375&height=676) 
 
 
 ## Contributing
